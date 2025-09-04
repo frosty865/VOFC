@@ -1,0 +1,382 @@
+{
+  "INDUSTRY_STANDARDS_REFERENCE": {
+    "description": "Mapping of Hotel Assessment criteria to citable industry standards and methodologies",
+    "version": "1.0",
+    "standards_sources": {
+             "SAFE_V2": {
+         "full_name": "Security at First Entry",
+         "organization": "DHS CISA",
+         "version": "V2.2",
+         "description": "Comprehensive security assessment methodology for critical infrastructure",
+         "citable": true
+       },
+       "SAFE_V3_FRAMEWORK": {
+         "full_name": "Security at First Entry",
+         "organization": "DHS CISA",
+         "version": "V3.0 (Draft)",
+         "description": "Framework structure for future version (not yet citable)",
+         "citable": false,
+         "note": "Used for framework structure only - not cited in reports"
+       },
+      "NFPA": {
+        "full_name": "National Fire Protection Association",
+        "organization": "NFPA",
+        "standards": ["NFPA 101", "NFPA 72", "NFPA 13"],
+        "description": "Fire safety and life safety standards"
+      },
+      "ASIS": {
+        "full_name": "ASIS International",
+        "organization": "ASIS",
+        "standards": ["ASIS GDL FPSM-2012", "ASIS GDL PSC-2012"],
+        "description": "Physical security and facility protection standards"
+      },
+      "IBC": {
+        "full_name": "International Building Code",
+        "organization": "ICC",
+        "version": "2021",
+        "description": "Building safety and security requirements"
+      }
+    },
+    "criteria_mapping": {
+      "physical_security": {
+        "standoff_distance": {
+          "our_field": "standoff_street_distance",
+          "standards": [
+                         {
+               "source": "SAFE V2.2",
+               "reference": "Physical Security Section 3.1",
+               "standard": "Minimum 50 feet standoff distance from street to building",
+               "citable": true
+             },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 4.2.1",
+              "standard": "Vehicle standoff distance based on building vulnerability",
+              "citable": true
+            },
+            {
+              "source": "IBC 2021",
+              "reference": "Section 3120.1",
+              "standard": "Vehicle barrier requirements for high-occupancy buildings",
+              "citable": true
+            }
+          ]
+        },
+        "vehicle_barriers": {
+          "our_field": "standoff_vehicle_barriers",
+          "standards": [
+                         {
+               "source": "SAFE V2.2",
+               "reference": "Physical Security Section 3.2",
+               "standard": "Vehicle barriers present and functional",
+               "citable": true
+             },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 4.3.2",
+              "standard": "Crash-rated vehicle barriers for critical facilities",
+              "citable": true
+            }
+          ]
+        },
+        "perimeter_fencing": {
+          "our_field": "standoff_perimeter_fencing",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Physical Security Section 3.3",
+              "standard": "Perimeter fencing present and maintained",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 4.1.3",
+              "standard": "Perimeter security fencing requirements",
+              "citable": true
+            }
+          ]
+        }
+      },
+      "video_surveillance": {
+        "system_presence": {
+          "our_field": "vss_present",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Electronic Security Section 4.1",
+              "standard": "Video surveillance system present and operational",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL PSC-2012",
+              "reference": "Section 5.2.1",
+              "standard": "Video surveillance for facility protection",
+              "citable": true
+            }
+          ]
+        },
+        "retention_period": {
+          "our_field": "vss_retention",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Electronic Security Section 4.2",
+              "standard": "Video retention minimum 30 days",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL PSC-2012",
+              "reference": "Section 5.2.4",
+              "standard": "Video storage and retention requirements",
+              "citable": true
+            }
+          ]
+        },
+        "digital_system": {
+          "our_field": "vss_system_type",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Electronic Security Section 4.3",
+              "standard": "Digital video surveillance system preferred",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL PSC-2012",
+              "reference": "Section 5.2.2",
+              "standard": "Digital video system capabilities",
+              "citable": true
+            }
+          ]
+        }
+      },
+      "access_control": {
+        "electronic_systems": {
+          "our_field": "els_rfid|els_magstripe|els_mobile|els_pin|els_biometric",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Electronic Security Section 5.1",
+              "standard": "Electronic access control systems present",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL PSC-2012",
+              "reference": "Section 6.1.2",
+              "standard": "Electronic access control for facility security",
+              "citable": true
+            }
+          ]
+        },
+        "multiple_methods": {
+          "our_field": "els_rfid|els_magstripe|els_mobile|els_pin|els_biometric",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Electronic Security Section 5.2",
+              "standard": "Multiple access control methods for redundancy",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL PSC-2012",
+              "reference": "Section 6.1.3",
+              "standard": "Layered access control approach",
+              "citable": true
+            }
+          ]
+        }
+      },
+      "security_force": {
+        "dedicated_force": {
+          "our_field": "secforce_type",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Security Force Section 6.1",
+              "standard": "Dedicated security force present",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 7.1.1",
+              "standard": "Security force requirements for critical facilities",
+              "citable": true
+            }
+          ]
+        },
+        "24_7_coverage": {
+          "our_field": "secforce_247",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Security Force Section 6.2",
+              "standard": "24/7 security coverage",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 7.1.2",
+              "standard": "Continuous security presence requirements",
+              "citable": true
+            }
+          ]
+        },
+                 "surge_capacity": {
+           "our_field": "secforce_surge_capacity",
+           "standards": [
+             {
+               "source": "SAFE V3",
+               "reference": "Security Force Section 6.3",
+               "standard": "Surge capacity planning for emergencies",
+               "citable": true
+             },
+             {
+               "source": "ASIS GDL FPSM-2012",
+               "reference": "Section 7.1.3",
+               "standard": "Emergency response capacity planning",
+               "citable": true
+             }
+           ]
+         }
+      },
+      "emergency_planning": {
+        "documented_plans": {
+          "our_field": "plan_active_written|plan_bomb_written|plan_fire_written|plan_med_written|plan_nat_written|plan_guest_evac_written|plan_guest_reloc_written",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Emergency Planning Section 7.1",
+              "standard": "Emergency plans documented and accessible",
+              "citable": true
+            },
+            {
+              "source": "NFPA 101",
+              "reference": "Section 4.8",
+              "standard": "Emergency planning requirements for assembly occupancies",
+              "citable": true
+            },
+            {
+              "source": "ASIS GDL FPSM-2012",
+              "reference": "Section 8.1.1",
+              "standard": "Emergency response planning requirements",
+              "citable": true
+            }
+          ]
+        },
+        "annual_review": {
+          "our_field": "plan_active_review|plan_bomb_review|plan_fire_review|plan_med_review|plan_nat_review|plan_guest_evac_review|plan_guest_reloc_review",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Emergency Planning Section 7.2",
+              "standard": "Emergency plans reviewed annually",
+              "citable": true
+            },
+            {
+              "source": "NFPA 101",
+              "reference": "Section 4.8.2",
+              "standard": "Annual review of emergency plans",
+              "citable": true
+            }
+          ]
+        },
+        "plan_exercises": {
+          "our_field": "plan_active_exercise|plan_bomb_exercise|plan_fire_exercise|plan_med_exercise|plan_nat_exercise|plan_guest_evac_exercise|plan_guest_reloc_exercise",
+          "standards": [
+            {
+              "source": "SAFE V3",
+              "reference": "Emergency Planning Section 7.3",
+              "standard": "Emergency plans exercised regularly",
+              "citable": true
+            },
+            {
+              "source": "NFPA 101",
+              "reference": "Section 4.8.3",
+              "standard": "Emergency plan exercise requirements",
+              "citable": true
+            }
+          ]
+        }
+      },
+      "life_safety": {
+        "fire_systems": {
+          "our_field": "fdcSystems|standpipeSystems|sprinklerSystems",
+          "standards": [
+            {
+              "source": "NFPA 13",
+              "reference": "Section 3.1",
+              "standard": "Automatic sprinkler system requirements",
+              "citable": true
+            },
+            {
+              "source": "NFPA 14",
+              "reference": "Section 4.1",
+              "standard": "Standpipe system requirements",
+              "citable": true
+            },
+            {
+              "source": "NFPA 72",
+              "reference": "Section 10.1",
+              "standard": "Fire detection and alarm system requirements",
+              "citable": true
+            }
+          ]
+        }
+      },
+      "infrastructure": {
+                 "backup_systems": {
+           "our_field": "backupSystems",
+           "standards": [
+             {
+               "source": "SAFE V3",
+               "reference": "Infrastructure Section 8.1",
+               "standard": "Critical infrastructure backup systems",
+               "citable": true
+             },
+             {
+               "source": "ASIS GDL FPSM-2012",
+               "reference": "Section 9.2",
+               "standard": "Infrastructure protection requirements",
+               "citable": true
+             }
+           ]
+         },
+         "utility_dependencies": {
+           "our_field": "utilityDependencies",
+           "standards": [
+             {
+               "source": "SAFE V3",
+               "reference": "Infrastructure Section 8.2",
+               "standard": "Critical asset dependency mapping",
+               "citable": true
+             },
+             {
+               "source": "ASIS GDL FPSM-2012",
+               "reference": "Section 9.1",
+               "standard": "Critical infrastructure assessment",
+               "citable": true
+             }
+           ]
+         }
+      }
+    },
+    "reference_page_template": {
+      "title": "Industry Standards Reference",
+      "description": "This assessment utilizes established industry standards and methodologies to ensure comprehensive security evaluation.",
+      "sections": [
+                 {
+           "title": "Primary Standards",
+           "standards": ["SAFE V2.2"]
+         },
+        {
+          "title": "Supporting Standards",
+          "standards": ["NFPA 101", "NFPA 72", "NFPA 13", "ASIS GDL FPSM-2012", "ASIS GDL PSC-2012", "IBC 2021"]
+        },
+        {
+          "title": "Methodology Integration",
+          "description": "Assessment criteria are validated against multiple industry standards to ensure comprehensive coverage and best practices."
+        }
+      ]
+    }
+  }
+}
