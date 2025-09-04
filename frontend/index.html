@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOFC - Vulnerability Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #7f8c8d;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #f8f9fa;
+        }
+
+        .tab.active {
+            border-bottom-color: #3498db;
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-primary:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .vulnerability-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #fff5f5;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .enhancement-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #fff8e1;
+            border-left: 4px solid #f39c12;
+        }
+
+        .sustainment-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f0fff4;
+            border-left: 4px solid #27ae60;
+        }
+
+        .option-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f0f8ff;
+            border-left: 4px solid #3498db;
+        }
+
+        .vulnerability-item h3,
+        .enhancement-item h3,
+        .sustainment-item h3,
+        .option-item h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .severity-high { color: #e74c3c; font-weight: bold; }
+        .severity-medium { color: #f39c12; font-weight: bold; }
+        .severity-low { color: #f1c40f; font-weight: bold; }
+        .severity-positive { color: #27ae60; font-weight: bold; }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .business-impact {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .business-impact h4 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .business-impact ul {
+            margin-left: 1rem;
+        }
+
+        .business-impact li {
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VOFC - Vulnerability Catalog</h1>
+            <p>Comprehensive Vulnerability, Options for Consideration, and Sustainment Library</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('catalog')">View Catalog</button>
+            <button class="tab" onclick="showTab('add-vulnerability')">Add Vulnerability</button>
+            <button class="tab" onclick="showTab('add-option')">Add Option for Consideration</button>
+        </div>
+
+        <div id="catalog" class="tab-content active">
+            <div id="catalog-content">
+                <div class="loading">Loading catalog data...</div>
+            </div>
+        </div>
+
+        <div id="add-vulnerability" class="tab-content">
+            <h2>Add New Vulnerability</h2>
+            <form id="vulnerability-form">
+                <div class="form-group">
+                    <label for="vuln-category">Category:</label>
+                    <select id="vuln-category" name="category" required onchange="loadStandards('vuln-category', 'vuln-standard')">
+                        <option value="">Select a category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-standard">Standard:</label>
+                    <select id="vuln-standard" name="standard" required disabled>
+                        <option value="">Select a standard...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-type">Type:</label>
+                    <select id="vuln-type" name="type" required>
+                        <option value="vulnerabilities">Vulnerability</option>
+                        <option value="enhancements">Enhancement</option>
+                        <option value="sustainments">Sustainment</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-condition">Condition:</label>
+                    <input type="text" id="vuln-condition" name="condition" required placeholder="e.g., empty, no, yes, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-issue">Issue:</label>
+                    <input type="text" id="vuln-issue" name="issue" required placeholder="Brief description of the issue">
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-description">Description:</label>
+                    <textarea id="vuln-description" name="description" required placeholder="Detailed description of the issue"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-action">Action:</label>
+                    <textarea id="vuln-action" name="action" required placeholder="Recommended action to address the issue"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-severity">Severity:</label>
+                    <select id="vuln-severity" name="severity" required>
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                        <option value="positive">Positive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-standards">Standards (comma-separated):</label>
+                    <input type="text" id="vuln-standards" name="standards" placeholder="e.g., SAFE V2.2 Physical Security Standards, NFPA 101">
+                </div>
+
+                <h3>Business Impact (Optional)</h3>
+                <div class="form-group">
+                    <label for="vuln-property">Property Impact:</label>
+                    <textarea id="vuln-property" name="property" placeholder="Impact on property/assets"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-people">People Impact:</label>
+                    <textarea id="vuln-people" name="people" placeholder="Impact on people/guests/staff"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-business">Business Impact:</label>
+                    <textarea id="vuln-business" name="business" placeholder="Impact on business operations"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Add Vulnerability</button>
+                <div id="vuln-message"></div>
+            </form>
+        </div>
+
+        <div id="add-option" class="tab-content">
+            <h2>Add New Option for Consideration</h2>
+            <form id="option-form">
+                <div class="form-group">
+                    <label for="opt-category">Category:</label>
+                    <select id="opt-category" name="category" required onchange="loadStandards('opt-category', 'opt-standard')">
+                        <option value="">Select a category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-standard">Standard:</label>
+                    <select id="opt-standard" name="standard" required disabled>
+                        <option value="">Select a standard...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-level">Level:</label>
+                    <select id="opt-level" name="level" required>
+                        <option value="Low-Cost">Low-Cost</option>
+                        <option value="Mid-Range">Mid-Range</option>
+                        <option value="High-End">High-End</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-description">Description:</label>
+                    <textarea id="opt-description" name="description" required placeholder="Description of the option for consideration"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-business-value">Business Value:</label>
+                    <textarea id="opt-business-value" name="business_value" required placeholder="Business value and benefits of this option"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Add Option for Consideration</button>
+                <div id="opt-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

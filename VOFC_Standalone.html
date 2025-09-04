@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOFC - Standalone Vulnerability Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #7f8c8d;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: #f8f9fa;
+        }
+
+        .tab.active {
+            border-bottom-color: #3498db;
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-primary:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .vulnerability-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #fff5f5;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .enhancement-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #fff8e1;
+            border-left: 4px solid #f39c12;
+        }
+
+        .sustainment-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f0fff4;
+            border-left: 4px solid #27ae60;
+        }
+
+        .option-item {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f0f8ff;
+            border-left: 4px solid #3498db;
+        }
+
+        .vulnerability-item h3,
+        .enhancement-item h3,
+        .sustainment-item h3,
+        .option-item h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .severity-high { color: #e74c3c; font-weight: bold; }
+        .severity-medium { color: #f39c12; font-weight: bold; }
+        .severity-low { color: #f1c40f; font-weight: bold; }
+        .severity-positive { color: #27ae60; font-weight: bold; }
+
+        .message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .business-impact {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .business-impact h4 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .business-impact ul {
+            margin-left: 1rem;
+        }
+
+        .business-impact li {
+            margin-bottom: 0.25rem;
+        }
+
+        .export-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .export-section h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VOFC - Standalone Vulnerability Catalog</h1>
+            <p>Air-Gapped Vulnerability, Options for Consideration, and Sustainment Library</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('catalog')">View Catalog</button>
+            <button class="tab" onclick="showTab('add-vulnerability')">Add Vulnerability</button>
+            <button class="tab" onclick="showTab('add-option')">Add Option for Consideration</button>
+            <button class="tab" onclick="showTab('export')">Export Data</button>
+        </div>
+
+        <div id="catalog" class="tab-content active">
+            <div id="catalog-content">
+                <div class="loading">Loading catalog data...</div>
+            </div>
+        </div>
+
+        <div id="add-vulnerability" class="tab-content">
+            <h2>Add New Vulnerability</h2>
+            <form id="vulnerability-form">
+                <div class="form-group">
+                    <label for="vuln-category">Category:</label>
+                    <select id="vuln-category" name="category" required onchange="loadStandards('vuln-category', 'vuln-standard')">
+                        <option value="">Select a category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-standard">Standard:</label>
+                    <select id="vuln-standard" name="standard" required disabled>
+                        <option value="">Select a standard...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-type">Type:</label>
+                    <select id="vuln-type" name="type" required>
+                        <option value="vulnerabilities">Vulnerability</option>
+                        <option value="enhancements">Enhancement</option>
+                        <option value="sustainments">Sustainment</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-condition">Condition:</label>
+                    <input type="text" id="vuln-condition" name="condition" required placeholder="e.g., empty, no, yes, etc.">
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-issue">Issue:</label>
+                    <input type="text" id="vuln-issue" name="issue" required placeholder="Brief description of the issue">
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-description">Description:</label>
+                    <textarea id="vuln-description" name="description" required placeholder="Detailed description of the issue"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-action">Action:</label>
+                    <textarea id="vuln-action" name="action" required placeholder="Recommended action to address the issue"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-severity">Severity:</label>
+                    <select id="vuln-severity" name="severity" required>
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                        <option value="positive">Positive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-standards">Standards (comma-separated):</label>
+                    <input type="text" id="vuln-standards" name="standards" placeholder="e.g., SAFE V2.2 Physical Security Standards, NFPA 101">
+                </div>
+
+                <h3>Business Impact (Optional)</h3>
+                <div class="form-group">
+                    <label for="vuln-property">Property Impact:</label>
+                    <textarea id="vuln-property" name="property" placeholder="Impact on property/assets"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-people">People Impact:</label>
+                    <textarea id="vuln-people" name="people" placeholder="Impact on people/guests/staff"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-business">Business Impact:</label>
+                    <textarea id="vuln-business" name="business" placeholder="Impact on business operations"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Add Vulnerability</button>
+                <div id="vuln-message"></div>
+            </form>
+        </div>
+
+        <div id="add-option" class="tab-content">
+            <h2>Add New Option for Consideration</h2>
+            <form id="option-form">
+                <div class="form-group">
+                    <label for="opt-category">Category:</label>
+                    <select id="opt-category" name="category" required onchange="loadStandards('opt-category', 'opt-standard')">
+                        <option value="">Select a category...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-standard">Standard:</label>
+                    <select id="opt-standard" name="standard" required disabled>
+                        <option value="">Select a standard...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-level">Level:</label>
+                    <select id="opt-level" name="level" required>
+                        <option value="Low-Cost">Low-Cost</option>
+                        <option value="Mid-Range">Mid-Range</option>
+                        <option value="High-End">High-End</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-description">Description:</label>
+                    <textarea id="opt-description" name="description" required placeholder="Description of the option for consideration"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="opt-business-value">Business Value:</label>
+                    <textarea id="opt-business-value" name="business_value" required placeholder="Business value and benefits of this option"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Add Option for Consideration</button>
+                <div id="opt-message"></div>
+            </form>
+        </div>
+
+        <div id="export" class="tab-content">
+            <h2>Export Data</h2>
+            <div class="export-section">
+                <h3>Export Options</h3>
+                <p>Export your catalog data for backup or sharing:</p>
+                <button class="btn-primary" onclick="exportData()">Export All Data as JSON</button>
+                <button class="btn-secondary" onclick="exportVulnerabilities()">Export Vulnerabilities Only</button>
+                <button class="btn-secondary" onclick="exportOptions()">Export Options Only</button>
+            </div>
+            
+            <div class="export-section">
+                <h3>Import Data</h3>
+                <p>Import data from a JSON file:</p>
+                <input type="file" id="import-file" accept=".json" onchange="importData()">
+                <button class="btn-primary" onclick="document.getElementById('import-file').click()">Choose File to Import</button>
+            </div>
+            
+            <div id="export-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let vulnerabilityData = null;
+        let categories = [];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInitialData();
+            setupEventListeners();
+        });
+
+        // Load initial data from embedded JSON
+        function loadInitialData() {
+            // Embedded VOFC Library Data
+            vulnerabilityData = {
+          "VOFC_Library": {
+                    "version": "1.0",
+                    "description": "Comprehensive Vulnerability, Options for Consideration, and Sustainment library for HOST V1 assessments",
+                    "categories": {
+                              "physical_security": {
+                                        "name": "Physical Security",
+                                        "standards": {
+                                                  "standoff_measures": {
+                                                            "name": "Standoff Measures Status",
+                                                            "field": "has_standoff_measures",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Physical security measures not specified",
+                                                                                "description": "No information about facility physical security measures",
+                                                                                "action": "Assess and document facility physical security status",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "Limited physical security measures",
+                                                                                "description": "Facility lacks documented physical security measures",
+                                                                                "action": "Consider implementing appropriate indoor security measures based on facility risk assessment",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "yes_no_distance",
+                                                                                "issue": "Physical security details not specified",
+                                                                                "description": "Physical security measures exist but details not documented",
+                                                                                "action": "Document physical security measure specifications and effectiveness",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes_adequate_distance",
+                                                                                "issue": "Adequate physical security measures",
+                                                                                "description": "Proper physical security with adequate standoff distance",
+                                                                                "action": "Maintain current physical security measures",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "standoff_distance": {
+                                                            "name": "Standoff Distance",
+                                                            "field": "standoff_street_distance",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "less_than_20",
+                                                                                "issue": "Limited standoff distance",
+                                                                                "description": "Current standoff is below recommended 20+ feet for indoor venues",
+                                                                                "action": "Consider increasing standoff distance or implementing additional indoor security measures",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "greater_than_20",
+                                                                                "issue": "Adequate standoff distance",
+                                                                                "description": "Standoff distance meets or exceeds recommended standards",
+                                                                                "action": "Maintain current standoff distance",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "vehicle_barriers": {
+                                                            "name": "Vehicle Barriers",
+                                                            "field": "standoff_vehicle_barriers",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "Vehicle barrier status not specified",
+                                                                                "description": "Physical security measures exist but vehicle barrier status not documented",
+                                                                                "action": "Document vehicle barrier system status and effectiveness",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "no_indoor_venue",
+                                                                                "issue": "Vehicle barriers not implemented",
+                                                                                "description": "Vehicle barriers not present - acceptable for indoor venues",
+                                                                                "action": "Maintain current indoor security measures",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "perimeter_fencing": {
+                                                            "name": "Perimeter Fencing",
+                                                            "field": "standoff_perimeter_fencing",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "Perimeter fencing not implemented",
+                                                                                "description": "Facility lacks perimeter fencing for enhanced security",
+                                                                                "action": "Consider implementing perimeter fencing based on facility risk assessment",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Perimeter fencing implemented",
+                                                                                "description": "Facility has appropriate perimeter fencing",
+                                                                                "action": "Maintain and regularly inspect perimeter fencing",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Physical Security Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  }
+                                        }
+                              },
+                              "security_force": {
+                                        "name": "Security Force",
+                                        "standards": {
+                                                  "force_type": {
+                                                            "name": "Security Force Type",
+                                                            "field": "secforce_type",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Security force type not specified",
+                                                                                "description": "No information about security force configuration",
+                                                                                "action": "Document security force type and capabilities",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "none",
+                                                                                "issue": "No security force present",
+                                                                                "description": "Facility operates without dedicated security personnel",
+                                                                                "action": "Consider implementing security force or alternative security measures",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "contracted",
+                                                                                "issue": "Contracted security force present",
+                                                                                "description": "Facility has contracted security services",
+                                                                                "action": "Maintain security force contracts and performance monitoring",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "in_house",
+                                                                                "issue": "In-house security force present",
+                                                                                "description": "Facility has dedicated in-house security personnel",
+                                                                                "action": "Maintain security force training and performance standards",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "coverage_247": {
+                                                            "name": "24/7 Security Coverage",
+                                                            "field": "secforce_247",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "24/7 coverage not specified",
+                                                                                "description": "Security force exists but coverage hours not documented",
+                                                                                "action": "Document security force coverage hours and gaps",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "Limited security force coverage",
+                                                                                "description": "Security force does not provide 24/7 coverage",
+                                                                                "action": "Consider extending security force coverage hours or implementing alternative monitoring",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "24/7 security force coverage",
+                                                                                "description": "Security force provides continuous coverage",
+                                                                                "action": "Maintain 24/7 security force coverage and performance standards",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "surge_capacity": {
+                                                            "name": "Surge Capacity",
+                                                            "field": "secforce_surge_capacity",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Surge capacity not specified",
+                                                                                "description": "Security force surge capacity not documented",
+                                                                                "action": "Document security force surge capacity and emergency response capabilities",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "Limited surge capacity",
+                                                                                "description": "Security force lacks surge capacity for emergency situations",
+                                                                                "action": "Develop surge capacity protocols and emergency response procedures",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Surge capacity available",
+                                                                                "description": "Security force has surge capacity for emergency situations",
+                                                                                "action": "Maintain surge capacity protocols and regular training",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Security Force Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  }
+                                        }
+                              },
+                              "video_surveillance": {
+                                        "name": "Video Surveillance",
+                                        "standards": {
+                                                  "vss_present": {
+                                                            "name": "Video Surveillance System Present",
+                                                            "field": "vss_present",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Video surveillance status not specified",
+                                                                                "description": "No information about video surveillance system",
+                                                                                "action": "Document video surveillance system status and capabilities",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "No video surveillance system",
+                                                                                "description": "Facility operates without video surveillance",
+                                                                                "action": "Consider implementing video surveillance system for enhanced security monitoring",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Video surveillance system present",
+                                                                                "description": "Facility has video surveillance system",
+                                                                                "action": "Maintain video surveillance system and regular testing",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "vss_system_type": {
+                                                            "name": "Video Surveillance System Type",
+                                                            "field": "vss_system_type",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "System type not specified",
+                                                                                "description": "Video surveillance exists but system type not documented",
+                                                                                "action": "Document video surveillance system type and capabilities",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "mixed",
+                                                                                "issue": "Mixed analog/digital system",
+                                                                                "description": "Video surveillance system uses mixed analog and digital technology",
+                                                                                "action": "Consider upgrading to fully digital system for improved performance and integration",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "digital",
+                                                                                "issue": "Digital video surveillance system",
+                                                                                "description": "Facility has modern digital video surveillance system",
+                                                                                "action": "Maintain digital video surveillance system and regular updates",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "vss_retention": {
+                                                            "name": "Video Surveillance Retention",
+                                                            "field": "vss_retention",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Retention period not specified",
+                                                                                "description": "Video surveillance retention period not documented",
+                                                                                "action": "Document video surveillance retention period and storage capacity",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "less_than_30",
+                                                                                "issue": "Short retention period",
+                                                                                "description": "Video surveillance retention period is less than 30 days",
+                                                                                "action": "Consider extending retention period to 30+ days for better incident investigation",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "greater_than_30",
+                                                                                "issue": "Adequate retention period",
+                                                                                "description": "Video surveillance retention period meets or exceeds 30 days",
+                                                                                "action": "Maintain current retention period and storage capacity",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Video Surveillance Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  }
+                                        }
+                              },
+                              "access_control": {
+                                        "name": "Access Control",
+                                        "standards": {
+                                                  "els_rfid": {
+                                                            "name": "Electronic Locking System - RFID",
+                                                            "field": "els_rfid",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "unchecked",
+                                                                                "issue": "RFID access control not implemented",
+                                                                                "description": "Facility lacks RFID-based electronic access control",
+                                                                                "action": "Consider implementing RFID access control for enhanced security",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "checked",
+                                                                                "issue": "RFID access control implemented",
+                                                                                "description": "Facility has RFID-based electronic access control",
+                                                                                "action": "Maintain RFID access control system and regular testing",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "els_mobile": {
+                                                            "name": "Electronic Locking System - Mobile",
+                                                            "field": "els_mobile",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "unchecked",
+                                                                                "issue": "Mobile access control not implemented",
+                                                                                "description": "Facility lacks mobile-based electronic access control",
+                                                                                "action": "Consider implementing mobile access control for enhanced convenience and security",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "checked",
+                                                                                "issue": "Mobile access control implemented",
+                                                                                "description": "Facility has mobile-based electronic access control",
+                                                                                "action": "Maintain mobile access control system and regular updates",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "els_pin": {
+                                                            "name": "Electronic Locking System - PIN",
+                                                            "field": "els_pin",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "unchecked",
+                                                                                "issue": "PIN access control not implemented",
+                                                                                "description": "Facility lacks PIN-based electronic access control",
+                                                                                "action": "Consider implementing PIN access control for enhanced security",
+                                                                                "severity": "medium",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "checked",
+                                                                                "issue": "PIN access control implemented",
+                                                                                "description": "Facility has PIN-based electronic access control",
+                                                                                "action": "Maintain PIN access control system and regular testing",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "els_biometric": {
+                                                            "name": "Electronic Locking System - Biometric",
+                                                            "field": "els_biometric",
+                                                            "vulnerabilities": [],
+                                                            "enhancements": [
+                                                                      {
+                                                                                "condition": "unchecked",
+                                                                                "issue": "Biometric access control not implemented",
+                                                                                "description": "Facility lacks biometric-based electronic access control",
+                                                                                "action": "Consider implementing biometric access control for enhanced security",
+                                                                                "severity": "low",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "checked",
+                                                                                "issue": "Biometric access control implemented",
+                                                                                "description": "Facility has biometric-based electronic access control",
+                                                                                "action": "Maintain biometric access control system and regular testing",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Access Control Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  }
+                                        }
+                              },
+                              "emergency_planning": {
+                                        "name": "Emergency Planning",
+                                        "standards": {
+                                                  "plan_active_written": {
+                                                            "name": "Active Shooter Plan Written",
+                                                            "field": "plan_active_written",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Active shooter plan not specified",
+                                                                                "description": "No information about active shooter emergency plan",
+                                                                                "action": "Develop and document active shooter emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "No active shooter plan",
+                                                                                "description": "Facility lacks documented active shooter emergency response plan",
+                                                                                "action": "Develop comprehensive active shooter emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Active shooter plan documented",
+                                                                                "description": "Facility has documented active shooter emergency response plan",
+                                                                                "action": "Maintain and regularly update active shooter emergency response plan",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "plan_bomb_written": {
+                                                            "name": "Bomb Threat Plan Written",
+                                                            "field": "plan_bomb_written",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Bomb threat plan not specified",
+                                                                                "description": "No information about bomb threat emergency plan",
+                                                                                "action": "Develop and document bomb threat emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "No bomb threat plan",
+                                                                                "description": "Facility lacks documented bomb threat emergency response plan",
+                                                                                "action": "Develop comprehensive bomb threat emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Bomb threat plan documented",
+                                                                                "description": "Facility has documented bomb threat emergency response plan",
+                                                                                "action": "Maintain and regularly update bomb threat emergency response plan",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  },
+                                                  "plan_fire_written": {
+                                                            "name": "Fire Emergency Plan Written",
+                                                            "field": "plan_fire_written",
+                                                            "vulnerabilities": [
+                                                                      {
+                                                                                "condition": "empty",
+                                                                                "issue": "Fire emergency plan not specified",
+                                                                                "description": "No information about fire emergency response plan",
+                                                                                "action": "Develop and document fire emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      },
+                                                                      {
+                                                                                "condition": "no",
+                                                                                "issue": "No fire emergency plan",
+                                                                                "description": "Facility lacks documented fire emergency response plan",
+                                                                                "action": "Develop comprehensive fire emergency response plan",
+                                                                                "severity": "high",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ],
+                                                            "enhancements": [],
+                                                            "sustainments": [
+                                                                      {
+                                                                                "condition": "yes",
+                                                                                "issue": "Fire emergency plan documented",
+                                                                                "description": "Facility has documented fire emergency response plan",
+                                                                                "action": "Maintain and regularly update fire emergency response plan",
+                                                                                "severity": "positive",
+                                                                                "standards": [
+                                                                                          "SAFE V2.2 Emergency Planning Standards"
+                                                                                ]
+                                                                      }
+                                                            ]
+                                                  }
+                                        }
+                              }
+                    },
+                    "elevator_security": {
+                              "name": "Elevator Security",
+                              "standards": {
+                                        "elevator_access_control": {
+                                                  "name": "Elevator Access Control",
+                                                  "field": "elevators_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_access_control",
+                                                                      "issue": "Elevators without access control",
+                                                                      "description": "One or more elevators lack access control measures",
+                                                                      "action": "Implement access control systems for all elevators to prevent unauthorized access",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_access_control",
+                                                                      "issue": "Inconsistent elevator access control",
+                                                                      "description": "Some elevators have access control while others do not",
+                                                                      "action": "Standardize access control across all elevators for consistent security",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_access_control",
+                                                                      "issue": "All elevators have access control",
+                                                                      "description": "All elevators are equipped with appropriate access control measures",
+                                                                      "action": "Maintain elevator access control systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        },
+                                        "elevator_vss_coverage": {
+                                                  "name": "Elevator VSS Coverage",
+                                                  "field": "elevators_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_vss_coverage",
+                                                                      "issue": "Elevators without VSS coverage",
+                                                                      "description": "One or more elevators lack video surveillance coverage",
+                                                                      "action": "Install video surveillance systems in all elevators for security monitoring",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_vss_coverage",
+                                                                      "issue": "Inconsistent elevator VSS coverage",
+                                                                      "description": "Some elevators have VSS coverage while others do not",
+                                                                      "action": "Standardize video surveillance coverage across all elevators",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_vss_coverage",
+                                                                      "issue": "All elevators have VSS coverage",
+                                                                      "description": "All elevators are covered by video surveillance systems",
+                                                                      "action": "Maintain elevator video surveillance systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        }
+                              }
+                    },
+                    "stairwell_security": {
+                              "name": "Stairwell Security",
+                              "standards": {
+                                        "stairwell_access_control": {
+                                                  "name": "Stairwell Access Control",
+                                                  "field": "stairwells_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_access_control",
+                                                                      "issue": "Stairwells without access control",
+                                                                      "description": "One or more stairwells lack access control measures",
+                                                                      "action": "Implement access control systems for all stairwells to prevent unauthorized access",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_access_control",
+                                                                      "issue": "Inconsistent stairwell access control",
+                                                                      "description": "Some stairwells have access control while others do not",
+                                                                      "action": "Standardize access control across all stairwells for consistent security",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_access_control",
+                                                                      "issue": "All stairwells have access control",
+                                                                      "description": "All stairwells are equipped with appropriate access control measures",
+                                                                      "action": "Maintain stairwell access control systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        },
+                                        "stairwell_monitoring": {
+                                                  "name": "Stairwell Monitoring",
+                                                  "field": "stairwells_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_monitoring",
+                                                                      "issue": "Stairwells without monitoring",
+                                                                      "description": "One or more stairwells lack monitoring systems",
+                                                                      "action": "Install monitoring systems in all stairwells for security surveillance",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_monitoring",
+                                                                      "issue": "Inconsistent stairwell monitoring",
+                                                                      "description": "Some stairwells have monitoring while others do not",
+                                                                      "action": "Standardize monitoring systems across all stairwells",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_monitoring",
+                                                                      "issue": "All stairwells have monitoring",
+                                                                      "description": "All stairwells are equipped with monitoring systems",
+                                                                      "action": "Maintain stairwell monitoring systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        }
+                              }
+                    },
+                    "exterior_door_security": {
+                              "name": "Exterior Door Security",
+                              "standards": {
+                                        "exterior_door_access_control": {
+                                                  "name": "Exterior Door Access Control",
+                                                  "field": "exterior_doors_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_access_control",
+                                                                      "issue": "Exterior doors without access control",
+                                                                      "description": "One or more exterior doors lack access control measures",
+                                                                      "action": "Implement access control systems for all exterior doors to prevent unauthorized access",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_access_control",
+                                                                      "issue": "Inconsistent exterior door access control",
+                                                                      "description": "Some exterior doors have access control while others do not",
+                                                                      "action": "Standardize access control across all exterior doors for consistent security",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_access_control",
+                                                                      "issue": "All exterior doors have access control",
+                                                                      "description": "All exterior doors are equipped with appropriate access control measures",
+                                                                      "action": "Maintain exterior door access control systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        },
+                                        "exterior_door_vss_coverage": {
+                                                  "name": "Exterior Door VSS Coverage",
+                                                  "field": "exterior_doors_table",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_vss_coverage",
+                                                                      "issue": "Exterior doors without VSS coverage",
+                                                                      "description": "One or more exterior doors lack video surveillance coverage",
+                                                                      "action": "Install video surveillance systems covering all exterior doors for security monitoring",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "mixed_vss_coverage",
+                                                                      "issue": "Inconsistent exterior door VSS coverage",
+                                                                      "description": "Some exterior doors have VSS coverage while others do not",
+                                                                      "action": "Standardize video surveillance coverage across all exterior doors",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "all_vss_coverage",
+                                                                      "issue": "All exterior doors have VSS coverage",
+                                                                      "description": "All exterior doors are covered by video surveillance systems",
+                                                                      "action": "Maintain exterior door video surveillance systems and regular testing",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ]
+                                                            }
+                                                  ]
+                                        }
+                              }
+                    },
+                    "parking_security": {
+                              "name": "Parking Security",
+                              "standards": {
+                                        "uncontrolled_parking": {
+                                                  "name": "Uncontrolled Parking Areas",
+                                                  "field": "parking_primary_control",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_control",
+                                                                      "issue": "Uncontrolled parking areas create crime opportunities",
+                                                                      "description": "Parking areas without access control create opportunities for vehicle theft, vandalism, and criminal activity",
+                                                                      "action": "Implement parking access control to prevent unauthorized access and criminal activity",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Vehicle theft/damage, facility vandalism, equipment loss",
+                                                                                "people": "Guest safety concerns, negative reviews, staff security",
+                                                                                "business": "Reduced guest satisfaction, potential lawsuits, brand reputation damage"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "limited_control",
+                                                                      "issue": "Insufficient parking access control",
+                                                                      "description": "Current parking control measures are inadequate for comprehensive security",
+                                                                      "action": "Enhance parking access control to provide better security coverage",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Potential vehicle damage, security gaps",
+                                                                                "people": "Guest security concerns, staff safety",
+                                                                                "business": "Guest dissatisfaction, operational inefficiencies"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "adequate_control",
+                                                                      "issue": "Comprehensive parking access control",
+                                                                      "description": "Parking areas have appropriate access control measures",
+                                                                      "action": "Maintain current parking access control systems and procedures",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Physical Security Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected vehicles and facility assets",
+                                                                                "people": "Guest confidence, staff security",
+                                                                                "business": "Enhanced guest satisfaction, reduced liability"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Implement parking attendant during peak hours",
+                                                                      "business_value": "Quick deployment, immediate risk reduction, guest confidence"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Install automated gate system with ticket validation",
+                                                                      "business_value": "Comprehensive security, enhanced guest experience, reduced liability"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full access control integration with guest room key cards",
+                                                                      "business_value": "Market differentiation, premium guest experience, long-term security posture"
+                                                            }
+                                                  ]
+                                        },
+                                        "ev_charging_fire_hazards": {
+                                                  "name": "EV Charging Fire Hazards",
+                                                  "field": "ev_site_suppression",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_suppression",
+                                                                      "issue": "EV charging without adequate fire suppression",
+                                                                      "description": "Electric vehicle charging stations lack proper fire suppression systems, creating risk of lithium-ion battery fires",
+                                                                      "action": "Implement fire suppression systems for EV charging areas to prevent catastrophic fires",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Fire Safety Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Catastrophic facility damage, business interruption",
+                                                                                "people": "Guest and staff safety, potential injuries",
+                                                                                "business": "Complete facility shutdown, operational disruption, guest displacement"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "limited_suppression",
+                                                                      "issue": "Insufficient EV fire suppression coverage",
+                                                                      "description": "Current fire suppression measures are inadequate for EV charging fire risks",
+                                                                      "action": "Enhance fire suppression systems to adequately protect EV charging areas",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Fire Safety Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Potential fire damage, business disruption",
+                                                                                "people": "Safety concerns, evacuation risks",
+                                                                                "business": "Operational delays, guest inconvenience"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "adequate_suppression",
+                                                                      "issue": "Comprehensive EV fire suppression",
+                                                                      "description": "EV charging areas have appropriate fire suppression systems",
+                                                                      "action": "Maintain current EV fire suppression systems and procedures",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Fire Safety Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected facility assets, business continuity",
+                                                                                "people": "Guest and staff safety assurance",
+                                                                                "business": "Operational reliability, guest confidence"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Install thermal monitoring cameras + fire extinguishers",
+                                                                      "business_value": "Early detection, immediate response capability, cost-effective protection"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Add dedicated EV fire suppression system",
+                                                                      "business_value": "Specialized protection, enhanced safety, reduced fire risk"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full integration with building fire alarm + sprinkler system",
+                                                                      "business_value": "Comprehensive protection, automated response, maximum safety"
+                                                            }
+                                                  ]
+                                        },
+                                        "parking_vss_gaps": {
+                                                  "name": "Parking Video Surveillance Gaps",
+                                                  "field": "parking_vss_coverage",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_coverage",
+                                                                      "issue": "Parking areas without video surveillance create security blind spots",
+                                                                      "description": "Parking areas lack video surveillance coverage, creating blind spots for security monitoring and incident investigation",
+                                                                      "action": "Install video surveillance systems in parking areas to eliminate security blind spots",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Unreported vehicle damage, hit-and-run incidents",
+                                                                                "people": "Guest safety concerns, inability to investigate incidents",
+                                                                                "business": "Increased guest complaints, legal liability, operational inefficiencies"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "partial_coverage",
+                                                                      "issue": "Incomplete parking video surveillance coverage",
+                                                                      "description": "Some parking areas lack video surveillance, creating security gaps",
+                                                                      "action": "Extend video surveillance coverage to all parking areas for comprehensive monitoring",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Potential unreported incidents, security gaps",
+                                                                                "people": "Guest safety concerns, limited incident response",
+                                                                                "business": "Guest dissatisfaction, liability exposure"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "full_coverage",
+                                                                      "issue": "Comprehensive parking video surveillance",
+                                                                      "description": "All parking areas have complete video surveillance coverage",
+                                                                      "action": "Maintain current video surveillance systems and coverage",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Video Surveillance Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected vehicles, documented incidents",
+                                                                                "people": "Guest safety assurance, incident investigation capability",
+                                                                                "business": "Reduced liability, enhanced security posture"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Add wireless IP cameras to blind spots",
+                                                                      "business_value": "Quick coverage, cost-effective monitoring, immediate security improvement"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Install PTZ cameras with motion detection",
+                                                                      "business_value": "Active monitoring, enhanced detection, improved incident response"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full VSS integration with AI analytics and license plate recognition",
+                                                                      "business_value": "Advanced security, automated monitoring, premium guest experience"
+                                                            }
+                                                  ]
+                                        }
+                              }
+                    },
+                    "infrastructure_resilience": {
+                              "name": "Infrastructure Resilience",
+                              "standards": {
+                                        "utility_protection": {
+                                                  "name": "Critical Utility Protection",
+                                                  "field": "utility_protection_status",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_protection",
+                                                                      "issue": "Critical utilities lack physical protection",
+                                                                      "description": "Gas mains, transformers, and electrical equipment lack physical barriers, creating risk of vehicle impact and service interruption",
+                                                                      "action": "Implement physical protection for critical utilities to prevent service interruption and business disruption",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Utility damage, facility power loss, equipment failure",
+                                                                                "people": "Guest safety during outages, staff operational challenges",
+                                                                                "business": "Complete business interruption, guest displacement, revenue loss"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "limited_protection",
+                                                                      "issue": "Insufficient utility protection measures",
+                                                                      "description": "Current utility protection measures are inadequate for comprehensive business continuity",
+                                                                      "action": "Enhance utility protection to ensure business resilience during incidents",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Potential utility damage, service interruption risk",
+                                                                                "people": "Guest inconvenience, operational delays",
+                                                                                "business": "Business disruption, guest dissatisfaction, operational inefficiencies"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "adequate_protection",
+                                                                      "issue": "Comprehensive utility protection",
+                                                                      "description": "Critical utilities have appropriate physical protection measures",
+                                                                      "action": "Maintain current utility protection systems and procedures",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected utility infrastructure, business continuity assurance",
+                                                                                "people": "Guest confidence, operational reliability",
+                                                                                "business": "Business resilience, enhanced guest experience, operational efficiency"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Install bollards and protective barriers around critical utilities",
+                                                                      "business_value": "Immediate protection, cost-effective resilience, business continuity assurance"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Implement comprehensive utility protection with monitoring systems",
+                                                                      "business_value": "Enhanced protection, incident detection, operational reliability"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full utility protection integration with building management systems",
+                                                                      "business_value": "Maximum resilience, automated monitoring, premium business continuity"
+                                                            }
+                                                  ]
+                                        },
+                                        "backup_power_reliability": {
+                                                  "name": "Backup Power System Reliability",
+                                                  "field": "backup_power_status",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_backup_power",
+                                                                      "issue": "Facility lacks backup power systems",
+                                                                      "description": "No backup power systems exist, creating risk of complete business interruption during power outages",
+                                                                      "action": "Implement backup power systems to ensure business continuity during electrical outages",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Complete facility shutdown, equipment damage, data loss",
+                                                                                "people": "Guest evacuation, safety concerns, operational paralysis",
+                                                                                "business": "Total business interruption, revenue loss, guest displacement"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "limited_backup_power",
+                                                                      "issue": "Insufficient backup power coverage",
+                                                                      "description": "Backup power systems cover only critical functions, limiting business operations during outages",
+                                                                      "action": "Extend backup power coverage to support essential business operations",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Partial facility shutdown, limited operations",
+                                                                                "people": "Guest inconvenience, reduced services",
+                                                                                "business": "Business disruption, reduced revenue, operational limitations"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "comprehensive_backup_power",
+                                                                      "issue": "Comprehensive backup power coverage",
+                                                                      "description": "Backup power systems provide comprehensive coverage for business operations",
+                                                                      "action": "Maintain current backup power systems and procedures",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected operations, business continuity assurance",
+                                                                                "people": "Guest confidence, uninterrupted services",
+                                                                                "business": "Business resilience, enhanced guest experience, operational reliability"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Install UPS systems for critical equipment and lighting",
+                                                                      "business_value": "Immediate protection, cost-effective resilience, essential operations continuity"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Implement generator systems for extended power outages",
+                                                                      "business_value": "Extended protection, business continuity, guest service assurance"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full backup power integration with automated failover systems",
+                                                                      "business_value": "Maximum resilience, seamless operations, premium guest experience"
+                                                            }
+                                                  ]
+                                        },
+                                        "water_system_protection": {
+                                                  "name": "Water System Protection",
+                                                  "field": "water_system_status",
+                                                  "vulnerabilities": [
+                                                            {
+                                                                      "condition": "no_protection",
+                                                                      "issue": "Water systems lack contamination protection",
+                                                                      "description": "Water systems lack protection against contamination, creating risk of health issues and business closure",
+                                                                      "action": "Implement water system protection to prevent contamination and ensure guest safety",
+                                                                      "severity": "high",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Water system contamination, facility closure, equipment damage",
+                                                                                "people": "Guest health risks, staff safety concerns, regulatory issues",
+                                                                                "business": "Complete business closure, health department intervention, massive liability exposure"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "enhancements": [
+                                                            {
+                                                                      "condition": "limited_protection",
+                                                                      "issue": "Insufficient water system protection",
+                                                                      "description": "Current water protection measures are inadequate for comprehensive safety",
+                                                                      "action": "Enhance water system protection to ensure guest safety and business continuity",
+                                                                      "severity": "medium",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Potential contamination, system vulnerability",
+                                                                                "people": "Guest safety concerns, health risks",
+                                                                                "business": "Business disruption, regulatory scrutiny, liability exposure"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "sustainments": [
+                                                            {
+                                                                      "condition": "adequate_protection",
+                                                                      "issue": "Comprehensive water system protection",
+                                                                      "description": "Water systems have appropriate protection measures",
+                                                                      "action": "Maintain current water system protection and procedures",
+                                                                      "severity": "positive",
+                                                                      "standards": [
+                                                                                "SAFE V2.2 Infrastructure Protection Standards"
+                                                                      ],
+                                                                      "business_impact": {
+                                                                                "property": "Protected water systems, contamination prevention",
+                                                                                "people": "Guest safety assurance, health protection",
+                                                                                "business": "Business continuity, regulatory compliance, liability reduction"
+                                                                      }
+                                                            }
+                                                  ],
+                                                  "options_for_consideration": [
+                                                            {
+                                                                      "level": "Low-Cost",
+                                                                      "description": "Install backflow prevention devices and water monitoring systems",
+                                                                      "business_value": "Immediate protection, health safety, regulatory compliance"
+                                                            },
+                                                            {
+                                                                      "level": "Mid-Range",
+                                                                      "description": "Implement comprehensive water treatment and monitoring",
+                                                                      "business_value": "Enhanced protection, guest safety, business continuity"
+                                                            },
+                                                            {
+                                                                      "level": "High-End",
+                                                                      "description": "Full water system integration with automated monitoring and treatment",
+                                                                      "business_value": "Maximum protection, automated safety, premium guest experience"
+                                                            }
+                                                  ]
+                                        }
+                              }
+                    }
+          }
+};
+            vulnerabilityData = {
+                "VOFC_Library": {
+                    "version": "1.0",
+                    "description": "Comprehensive Vulnerability, Options for Consideration, and Sustainment library for HOST V1 assessments",
+                    "categories": {
+                        "physical_security": {
+                            "name": "Physical Security",
+                            "standards": {
+                                "standoff_measures": {
+                                    "name": "Standoff Measures Status",
+                                    "field": "has_standoff_measures",
+                                    "vulnerabilities": [],
+                                    "enhancements": [],
+                                    "sustainments": []
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // Extract categories
+            if (vulnerabilityData && vulnerabilityData.VOFC_Library && vulnerabilityData.VOFC_Library.categories) {
+                const categoryKeys = Object.keys(vulnerabilityData.VOFC_Library.categories);
+                categories = categoryKeys.map(key => ({
+                    id: key,
+                    name: vulnerabilityData.VOFC_Library.categories[key].name
+                }));
+            }
+            
+            populateCategoryDropdowns();
+            renderCatalog();
+        }
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Populate category dropdowns
+        function populateCategoryDropdowns() {
+            const vulnCategorySelect = document.getElementById('vuln-category');
+            const optCategorySelect = document.getElementById('opt-category');
+            
+            categories.forEach(category => {
+                const option1 = new Option(category.name, category.id);
+                const option2 = new Option(category.name, category.id);
+                vulnCategorySelect.add(option1);
+                optCategorySelect.add(option2);
+            });
+        }
+
+        // Load standards for a category
+        function loadStandards(categorySelectId, standardSelectId) {
+            const categorySelect = document.getElementById(categorySelectId);
+            const standardSelect = document.getElementById(standardSelectId);
+            
+            if (!categorySelect.value) {
+                standardSelect.disabled = true;
+                standardSelect.innerHTML = '<option value="">Select a standard...</option>';
+                return;
+            }
+            
+            const category = vulnerabilityData.VOFC_Library.categories[categorySelect.value];
+            if (category && category.standards) {
+                const standards = Object.keys(category.standards).map(key => ({
+                    id: key,
+                    name: category.standards[key].name
+                }));
+                
+                standardSelect.innerHTML = '<option value="">Select a standard...</option>';
+                standards.forEach(standard => {
+                    const option = new Option(standard.name, standard.id);
+                    standardSelect.add(option);
+                });
+                standardSelect.disabled = false;
+            }
+        }
+
+        // Render the catalog
+        function renderCatalog() {
+            if (!vulnerabilityData || !vulnerabilityData.VOFC_Library) {
+                document.getElementById('catalog-content').innerHTML = 
+                    '<div class="message error">No data available</div>';
+                return;
+            }
+
+            const categories = vulnerabilityData.VOFC_Library.categories;
+            const categoryKeys = Object.keys(categories);
+
+            let html = `
+                <div class="form-group">
+                    <label for="catalog-category">Select Category:</label>
+                    <select id="catalog-category" onchange="renderCategoryData()">
+                        <option value="">Choose a category...</option>
+                        ${categoryKeys.map(key => 
+                            `<option value="${key}">${categories[key].name}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                
+                <div id="catalog-data"></div>
+            `;
+
+            document.getElementById('catalog-content').innerHTML = html;
+        }
+
+        // Render category data
+        function renderCategoryData() {
+            const categorySelect = document.getElementById('catalog-category');
+            const catalogData = document.getElementById('catalog-data');
+            
+            if (!categorySelect.value) {
+                catalogData.innerHTML = '';
+                return;
+            }
+
+            const category = vulnerabilityData.VOFC_Library.categories[categorySelect.value];
+            const standards = category.standards;
+            const standardKeys = Object.keys(standards);
+
+            let html = `
+                <div class="form-group">
+                    <label for="catalog-standard">Select Standard:</label>
+                    <select id="catalog-standard" onchange="renderStandardData()">
+                        <option value="">Choose a standard...</option>
+                        ${standardKeys.map(key => 
+                            `<option value="${key}">${standards[key].name}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                
+                <div id="standard-data"></div>
+            `;
+
+            catalogData.innerHTML = html;
+        }
+
+        // Render standard data
+        function renderStandardData() {
+            const categorySelect = document.getElementById('catalog-category');
+            const standardSelect = document.getElementById('catalog-standard');
+            const standardData = document.getElementById('standard-data');
+            
+            if (!categorySelect.value || !standardSelect.value) {
+                standardData.innerHTML = '';
+                return;
+            }
+
+            const category = vulnerabilityData.VOFC_Library.categories[categorySelect.value];
+            const standard = category.standards[standardSelect.value];
+
+            let html = `<h2>${category.name} - ${standard.name}</h2>`;
+
+            // Render vulnerabilities
+            if (standard.vulnerabilities && standard.vulnerabilities.length > 0) {
+                html += '<h3>Vulnerabilities</h3>';
+                standard.vulnerabilities.forEach((item, index) => {
+                    html += renderVulnerabilityItem(item, index);
+                });
+            }
+
+            // Render enhancements
+            if (standard.enhancements && standard.enhancements.length > 0) {
+                html += '<h3>Enhancements</h3>';
+                standard.enhancements.forEach((item, index) => {
+                    html += renderEnhancementItem(item, index);
+                });
+            }
+
+            // Render sustainments
+            if (standard.sustainments && standard.sustainments.length > 0) {
+                html += '<h3>Sustainments</h3>';
+                standard.sustainments.forEach((item, index) => {
+                    html += renderSustainmentItem(item, index);
+                });
+            }
+
+            // Render options for consideration
+            if (standard.options_for_consideration && standard.options_for_consideration.length > 0) {
+                html += '<h3>Options for Consideration</h3>';
+                standard.options_for_consideration.forEach((item, index) => {
+                    html += renderOptionItem(item, index);
+                });
+            }
+
+            standardData.innerHTML = html;
+        }
+
+        // Render vulnerability item
+        function renderVulnerabilityItem(item, index) {
+            let html = `
+                <div class="vulnerability-item">
+                    <h3>Vulnerability: ${item.issue}</h3>
+                    <p><strong>Condition:</strong> ${item.condition}</p>
+                    <p><strong>Description:</strong> ${item.description}</p>
+                    <p><strong>Action:</strong> ${item.action}</p>
+                    <p><strong>Severity:</strong> <span class="severity-${item.severity}">${item.severity}</span></p>
+            `;
+
+            if (item.standards && item.standards.length > 0) {
+                html += `<p><strong>Standards:</strong> ${item.standards.join(', ')}</p>`;
+            }
+
+            if (item.business_impact) {
+                html += renderBusinessImpact(item.business_impact);
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        // Render enhancement item
+        function renderEnhancementItem(item, index) {
+            let html = `
+                <div class="enhancement-item">
+                    <h3>Enhancement: ${item.issue}</h3>
+                    <p><strong>Condition:</strong> ${item.condition}</p>
+                    <p><strong>Description:</strong> ${item.description}</p>
+                    <p><strong>Action:</strong> ${item.action}</p>
+                    <p><strong>Severity:</strong> <span class="severity-${item.severity}">${item.severity}</span></p>
+            `;
+
+            if (item.standards && item.standards.length > 0) {
+                html += `<p><strong>Standards:</strong> ${item.standards.join(', ')}</p>`;
+            }
+
+            if (item.business_impact) {
+                html += renderBusinessImpact(item.business_impact);
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        // Render sustainment item
+        function renderSustainmentItem(item, index) {
+            let html = `
+                <div class="sustainment-item">
+                    <h3>Sustainment: ${item.issue}</h3>
+                    <p><strong>Condition:</strong> ${item.condition}</p>
+                    <p><strong>Description:</strong> ${item.description}</p>
+                    <p><strong>Action:</strong> ${item.action}</p>
+                    <p><strong>Severity:</strong> <span class="severity-${item.severity}">${item.severity}</span></p>
+            `;
+
+            if (item.standards && item.standards.length > 0) {
+                html += `<p><strong>Standards:</strong> ${item.standards.join(', ')}</p>`;
+            }
+
+            if (item.business_impact) {
+                html += renderBusinessImpact(item.business_impact);
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        // Render option item
+        function renderOptionItem(item, index) {
+            return `
+                <div class="option-item">
+                    <h3>Option: ${item.level}</h3>
+                    <p><strong>Description:</strong> ${item.description}</p>
+                    <p><strong>Business Value:</strong> ${item.business_value}</p>
+                </div>
+            `;
+        }
+
+        // Render business impact
+        function renderBusinessImpact(businessImpact) {
+            let html = '<div class="business-impact"><h4>Business Impact:</h4><ul>';
+            
+            if (businessImpact.property) {
+                html += `<li><strong>Property:</strong> ${businessImpact.property}</li>`;
+            }
+            if (businessImpact.people) {
+                html += `<li><strong>People:</strong> ${businessImpact.people}</li>`;
+            }
+            if (businessImpact.business) {
+                html += `<li><strong>Business:</strong> ${businessImpact.business}</li>`;
+            }
+            
+            html += '</ul></div>';
+            return html;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Vulnerability form submission
+            document.getElementById('vulnerability-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const categoryId = formData.get('category');
+                const standardId = formData.get('standard');
+                const type = formData.get('type');
+                
+                if (!categoryId || !standardId) {
+                    showMessage('vuln-message', 'Please select both category and standard', 'error');
+                    return;
+                }
+                
+                const newItem = {
+                    condition: formData.get('condition'),
+                    issue: formData.get('issue'),
+                    description: formData.get('description'),
+                    action: formData.get('action'),
+                    severity: formData.get('severity'),
+                    standards: formData.get('standards') ? formData.get('standards').split(',').map(s => s.trim()) : [],
+                    business_impact: {
+                        property: formData.get('property') || undefined,
+                        people: formData.get('people') || undefined,
+                        business: formData.get('business') || undefined
+                    }
+                };
+
+                // Remove undefined business impact fields
+                Object.keys(newItem.business_impact).forEach(key => {
+                    if (newItem.business_impact[key] === undefined) {
+                        delete newItem.business_impact[key];
+                    }
+                });
+
+                // Add to data structure
+                if (!vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId][type]) {
+                    vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId][type] = [];
+                }
+                
+                vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId][type].push(newItem);
+                
+                showMessage('vuln-message', 'Vulnerability added successfully!', 'success');
+                this.reset();
+                document.getElementById('vuln-standard').disabled = true;
+                renderCatalog(); // Refresh catalog
+            });
+
+            // Option form submission
+            document.getElementById('option-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const categoryId = formData.get('category');
+                const standardId = formData.get('standard');
+                
+                if (!categoryId || !standardId) {
+                    showMessage('opt-message', 'Please select both category and standard', 'error');
+                    return;
+                }
+                
+                const newOption = {
+                    level: formData.get('level'),
+                    description: formData.get('description'),
+                    business_value: formData.get('business_value')
+                };
+
+                // Add to data structure
+                if (!vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId].options_for_consideration) {
+                    vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId].options_for_consideration = [];
+                }
+                
+                vulnerabilityData.VOFC_Library.categories[categoryId].standards[standardId].options_for_consideration.push(newOption);
+                
+                showMessage('opt-message', 'Option for consideration added successfully!', 'success');
+                this.reset();
+                document.getElementById('opt-standard').disabled = true;
+                renderCatalog(); // Refresh catalog
+            });
+        }
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        // Export functions
+        function exportData() {
+            const dataStr = JSON.stringify(vulnerabilityData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'vofc_catalog_export.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showMessage('export-message', 'Data exported successfully!', 'success');
+        }
+
+        function exportVulnerabilities() {
+            const vulnerabilities = {};
+            Object.keys(vulnerabilityData.VOFC_Library.categories).forEach(categoryId => {
+                const category = vulnerabilityData.VOFC_Library.categories[categoryId];
+                vulnerabilities[categoryId] = { name: category.name, standards: {} };
+                
+                Object.keys(category.standards).forEach(standardId => {
+                    const standard = category.standards[standardId];
+                    vulnerabilities[categoryId].standards[standardId] = {
+                        name: standard.name,
+                        vulnerabilities: standard.vulnerabilities || [],
+                        enhancements: standard.enhancements || [],
+                        sustainments: standard.sustainments || []
+                    };
+                });
+            });
+            
+            const dataStr = JSON.stringify(vulnerabilities, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'vofc_vulnerabilities_export.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showMessage('export-message', 'Vulnerabilities exported successfully!', 'success');
+        }
+
+        function exportOptions() {
+            const options = {};
+            Object.keys(vulnerabilityData.VOFC_Library.categories).forEach(categoryId => {
+                const category = vulnerabilityData.VOFC_Library.categories[categoryId];
+                options[categoryId] = { name: category.name, standards: {} };
+                
+                Object.keys(category.standards).forEach(standardId => {
+                    const standard = category.standards[standardId];
+                    if (standard.options_for_consideration && standard.options_for_consideration.length > 0) {
+                        options[categoryId].standards[standardId] = {
+                            name: standard.name,
+                            options_for_consideration: standard.options_for_consideration
+                        };
+                    }
+                });
+            });
+            
+            const dataStr = JSON.stringify(options, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'vofc_options_export.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showMessage('export-message', 'Options exported successfully!', 'success');
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    vulnerabilityData = importedData;
+                    
+                    // Update categories
+                    if (vulnerabilityData && vulnerabilityData.VOFC_Library && vulnerabilityData.VOFC_Library.categories) {
+                        const categoryKeys = Object.keys(vulnerabilityData.VOFC_Library.categories);
+                        categories = categoryKeys.map(key => ({
+                            id: key,
+                            name: vulnerabilityData.VOFC_Library.categories[key].name
+                        }));
+                    }
+                    
+                    populateCategoryDropdowns();
+                    renderCatalog();
+                    showMessage('export-message', 'Data imported successfully!', 'success');
+                } catch (error) {
+                    showMessage('export-message', 'Error importing data: Invalid JSON format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
